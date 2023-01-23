@@ -5,6 +5,8 @@ const router = express.Router();
 let lines;
 const Data = require("../../Database/DataSchema");
 
+
+
 Data.find({}).then((doc) => {
   lines = doc.map((line) => line.line);
   console.log("Data collected successfully");
@@ -15,10 +17,21 @@ Data.find({}).then((doc) => {
 // Get single random line
 router.get("/randomLine", (req, res) => {
   // Get a random line from the array and selecting which are not empty
-  let randomLine;
-  do {
-    randomLine = lines[Math.floor(Math.random() * lines.length)];
-  } while (!randomLine);
+
+  try{
+      let randomLine;
+      do {
+        randomLine = lines[Math.floor(Math.random() * lines.length)];
+      } while (!randomLine);
+  }
+  catch(e){
+    Data.find({}).then((doc) => {
+        lines = doc.map((line) => line.line);
+        console.log("Data collected successfully");
+      }).catch((err) => {
+        console.error("Error collecting data: ", err);
+      });
+  }
 
   res.status(200).send({ text: randomLine });
 });
