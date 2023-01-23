@@ -18,8 +18,8 @@ Data.find({}).then((doc) => {
 router.get("/randomLine", (req, res) => {
   // Get a random line from the array and selecting which are not empty
 
+  let randomLine;
   try{
-      let randomLine;
       do {
         randomLine = lines[Math.floor(Math.random() * lines.length)];
       } while (!randomLine);
