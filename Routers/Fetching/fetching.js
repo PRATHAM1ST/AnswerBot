@@ -34,7 +34,7 @@ router.get("/randomLines/:numLines", (req, res) => {
 	if (!numLines || isNaN(numLines)) {
 		return res.status(400).send({ error: "Invalid number of lines" });
 	}
-	const randomLines = [];
+	const randomLines = []; 
 	for (let i = 0; i < numLines; i++) {
 		randomLines.push(lines[Math.floor(Math.random() * lines.length)]);
 	}
