@@ -1,28 +1,25 @@
-require('dotenv').config();
+const express = require("express");
+const router = express.Router();
+const Data = require("../../Database/DataSchema");
 
-const express = require('express');
-const fs = require('fs');
-const router = express.Router()
+router.post("/addLine", async (req, res) => {
+	try {
+		// Get the line to add from the request body
+		let line = req.body.line;
 
-const filePath = process.env.FILE_PATH
+		// Checking if the line contains fullstop at the end
+		if (line[line.length - 1] != ".") {
+			line += ".";
+		}
+        
+		// Insert the line from the database
+		await Data.insertMany([{ line: line }]);
 
-router.post("/addLine", (req, res) => {
-    // Get the line to add from the request body
-    let line = req.body.line;
-
-    // Checking if the line contains fullstop at the end 
-    if(line[line.length - 1] != "."){
-        line += "."
-    }
-
-    // Append the line to the file
-    fs.appendFile(filePath, line + "\r\n", (err) => {
-        if (err) {
-            res.status(500).send({ message: "Error adding line to file" });
-        } else {
-            res.status(200).send({ message: "Line added to file" });
-        }
-    });
+		res.status(200).send({ message: "Line deleted" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send({ message: "Error inserting line", err });
+	}
 });
 
 module.exports = router;

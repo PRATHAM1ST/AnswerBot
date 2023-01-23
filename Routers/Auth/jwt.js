@@ -13,11 +13,11 @@ router.use((req, res, next) => {
 	const token = req.cookies.token;
 	if (!token) {
 		// Generate the JWT
-		const token = jwt.sign(uuidv4(), secret);
+		const token = jwt.sign({ id: uuidv4() }, secret);
 
 		// Set the JWT as a cookie
 		res.cookie("token", token, { httpOnly: true });
-		res.redirect(302, req.originalUrl);
+		return res.redirect(302, req.originalUrl);
 	}
 	try {
 		const decoded = jwt.verify(token, secret);

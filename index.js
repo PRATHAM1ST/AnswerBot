@@ -6,9 +6,11 @@ const app = express();
 const addLine = require('./Routers/Adding/addLine')
 const fetching = require('./Routers/Fetching/fetching')
 const jwt = require('./Routers/Auth/jwt')
-const deleteLine = require('./Routers/Removing/deleteLine')
+const deleteLine = require('./Routers/Removing/deleteLine');
+const mongodbConnection = require("./Database/Connection");
 
-const deployed = true;
+// Connecting to mongodb
+mongodbConnection();
 
 // Cors policy
 app.use(cors());
