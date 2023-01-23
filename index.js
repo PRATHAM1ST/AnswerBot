@@ -35,7 +35,8 @@ app.use((req, res) => {
     res.status(404).send({ message: "Endpoint not found" });
 });
 
-const PORT = (deployed) ? 'https://answer-bot.vercel.app/' : 5000;
+const PORT = 5000;
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
