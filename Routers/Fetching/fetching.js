@@ -1,59 +1,66 @@
 const express = require("express");
 const router = express.Router();
 
-// Read the file once and store the lines in memory
-let lines;
 const Data = require("../../Database/DataSchema");
 
-Data.find({})
-	.then((doc) => {
-		lines = doc.map((line) => line.line);
-		console.log("Data collected successfully");
-	})
-	.catch((err) => {
-		console.error("Error collecting data: ", err);
-	});
-
-// Get single random line
-router.get("/randomLine", (req, res) => {
-	// Get a random line from the array and selecting which are not empty
-
-	let randomLine;
-
-	do {
-		randomLine = lines[Math.floor(Math.random() * lines.length)];
-	} while (!randomLine);
-
-	res.status(200).send({ text: randomLine });
+// Endpoint for returning random line
+router.get("/randomLine", async (req, res) => {
+	try {
+		const data = await Data.aggregate([
+			{ $match: { line: { $ne: "" } } },
+			{ $sample: { size: 1 } },
+		]);
+		const randomLine = data[0].line;
+		res.status(200).send({ text: randomLine });
+	} catch (err) {
+		console.error("Error collecting random line: ", err);
+		res.status(500).send({ error: "Internal server error" });
+	}
 });
 
 // Endpoint for returning random lines
-router.get("/randomLines/:numLines", (req, res) => {
+router.get("/randomLines/:numLines", async (req, res) => {
 	// Get the number of lines to return from the request parameters
 	const numLines = req.params.numLines;
 	if (!numLines || isNaN(numLines)) {
 		return res.status(400).send({ error: "Invalid number of lines" });
 	}
-	const randomLines = []; 
-	for (let i = 0; i < numLines; i++) {
-		randomLines.push(lines[Math.floor(Math.random() * lines.length)]);
+	try {
+		const data = await Data.aggregate([
+			{ $match: { line: { $ne: "" } } },
+			{ $sample: { size: parseInt(numLines) } },
+		]);
+		const randomLines = data.map((line) => line.line);
+		res.status(200).send({ randomLines });
+	} catch (err) {
+		console.error("Error collecting random lines: ", err);
+		res.status(500).send({ error: "Internal server error" });
 	}
-	res.status(200).send({ randomLines });
 });
 
 // Endpoint for returning sequential lines with pagination
-router.get("/sequentialLines", (req, res) => {
+router.get("/sequentialLines", async (req, res) => {
 	// Get the page number from the query parameters
 	const page = parseInt(req.query.page) || 1;
 	// Get the number of lines per page from the query parameters
 	const linesPerPage = parseInt(req.query.linesPerPage) || 10;
 
-	// Pagination Logic
-	const startIndex = (page - 1) * linesPerPage;
-	const endIndex = startIndex + linesPerPage;
-	const paginatedLines = lines.slice(startIndex, endIndex);
+	try {
+		const data = await Data.find({ line: { $ne: "" } });
+		const totalLines = data.length;
 
-	res.status(200).send({ paginatedLines });
+		// Pagination Logic
+		const startIndex = (page - 1) * linesPerPage;
+		const endIndex = startIndex + linesPerPage;
+		const paginatedLines = data
+			.slice(startIndex, endIndex)
+			.map((line) => line.line);
+
+		res.status(200).send({ paginatedLines, totalLines });
+	} catch (err) {
+		console.error("Error collecting sequential lines: ", err);
+		res.status(500).send({ error: "Internal server error" });
+	}
 });
 
 module.exports = router;
