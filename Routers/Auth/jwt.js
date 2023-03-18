@@ -19,12 +19,14 @@ router.use((req, res, next) => {
 		res.cookie("token", token, { httpOnly: true });
 		// return res.redirect(302, req.originalUrl);
 	}
-	try {
-		const decoded = jwt.verify(token, secret);
-		req.user = decoded;
-		next();
-	} catch (err) {
-		return res.status(401).send({ message: "Invalid token" });
+	else{
+		try {
+			const decoded = jwt.verify(token, secret);
+			req.user = decoded;
+			next();
+		} catch (err) {
+			return res.status(401).send({ message: "Invalid token" });
+		}
 	}
 });
 
