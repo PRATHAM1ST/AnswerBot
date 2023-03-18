@@ -17,7 +17,7 @@ router.use((req, res, next) => {
 
 		// Set the JWT as a cookie
 		res.cookie("token", token, { httpOnly: true });
-		return res.redirect(302, req.originalUrl);
+		// return res.redirect(302, req.originalUrl);
 	}
 	try {
 		const decoded = jwt.verify(token, secret);
