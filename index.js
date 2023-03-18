@@ -13,7 +13,11 @@ const mongodbConnection = require("./Database/Connection");
 mongodbConnection();
 
 // Cors policy
-app.use(cors());
+app.use(cors(
+    {
+        origin: "*",
+    }
+));
 
 // Accepting json data
 app.use(express.json());
