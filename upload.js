@@ -1,10 +1,13 @@
+require("dotenv").config();
+
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 
 // Connection URI for MongoDB Atlas
-const uri =
-	"mongodb+srv://pratham:U9VxGNAMqH0Tz7AI@cluster0.y8jgg3k.mongodb.net/answerbot?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI;
+
+console.log(uri);
 
 // Connect to MongoDB Atlas
 mongoose
@@ -15,13 +18,12 @@ mongoose
 	.catch((err) => console.log("Error connecting to MongoDB: ", err));
 
 // Create the Model for lines of text
-const Data = mongoose.model('Data', mongoose.Schema({ line: String }));;
+const Data = mongoose.model("Data", mongoose.Schema({ line: String }));
 
-Data.find({}).then(doc => console.log(doc))
+Data.find({}).then((doc) => console.log(doc));
 
 // File path for text file
 const filePath = path.join(__dirname, "./data/Modified.txt");
-
 
 // Read the contents of the text file
 fs.readFile(filePath, "utf8", async (err, data) => {
