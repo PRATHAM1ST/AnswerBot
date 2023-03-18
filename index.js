@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 // endpoints
-app.use(jwt)
+// app.use(jwt)
 app.use(addLine)
 app.use(fetching)
 app.use(deleteLine)
